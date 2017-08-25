@@ -76,6 +76,6 @@ Our structured message includes six fields. The first thow we passed are well-kn
 1. `MESSAGE=` is the actual human readable message part of the structured message.
 1. `PRIORITY=` is the numeric message priority value as known from BSD syslog formatted as an integer string.
 
-Applications may relatively freely define additional fields as they see fit (we defined four pretty arbitrary ones in our example). A complete list of the currently well-known fields is available [here](https://www.freedesktop.org/software/systemd/man/systemd.journal-fields.html):
+Applications may relatively freely define additional fields as they see fit (we defined four pretty arbitrary ones in our example). A complete list of the currently well-known fields is available [here](https://www.freedesktop.org/software/systemd/man/systemd.journal-fields.html).
 
 > Thanks to [http://0pointer.de/blog/](http://0pointer.de/blog/) for the inspiration.
