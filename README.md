@@ -1,4 +1,6 @@
 # journald-send
+[![GoDoc](https://godoc.org/github.com/ssgreg/journald-send?status.svg)](https://godoc.org/github.com/ssgreg/journald-send)
+[![Build Status](https://travis-ci.org/ssgreg/journald-send.svg?branch=master)](https://travis-ci.org/ssgreg/journald-send)
 
 Package `journald` offers Go implementation of systemd Journal's native API for logging. Key features are:
 
