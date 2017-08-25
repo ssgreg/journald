@@ -24,7 +24,7 @@ The JSON representation of the journal entry this generates:
 		"MESSAGE": "Hello World!",
 		"_PID": "3965",
 		"_COMM": "simple",
-		"...": "...""
+		...
 	}
 
 The primary reason for using the Journal's native logging APIs is a not just the source code location however: it is to allow passing additional structured log messages from the program into the journal. This additional log data may the be used to search the journal for, is available for consumption for other programs, and might help the administrator to track down issues beyond what is expressed in the human readable message text. Here's and example how to do that with journals.Send:
@@ -59,7 +59,7 @@ This will write a log message to the journal much like the earlier examples. How
 		"N_CPUS": "4",
 		"_PID": "4037",
 		"_COMM": "send",
-		"...": "...""
+		...
 	}
 
 Our structured message includes six fields. The first thow we passed are well-known fields:

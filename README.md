@@ -30,7 +30,7 @@ The JSON representation of the journal entry this generates:
     "MESSAGE": "Hello World!",
     "_PID": "3965",
     "_COMM": "simple",
-    ...
+    "...": "..."
 }
 ```
 
@@ -67,7 +67,7 @@ This will write a log message to the journal much like the earlier examples. How
     "N_CPUS": "4",
     "_PID": "4037",
     "_COMM": "send",
-    ...
+    "...": "..."
 }
 ```
 
