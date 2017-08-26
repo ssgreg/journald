@@ -48,7 +48,7 @@ func IsNotExists() bool {
 	return os.IsNotExist(err)
 }
 
-// Journal TODO
+// Journal keeps a connection to the system journal
 type Journal struct {
 	once    sync.Once
 	conn    *net.UnixConn

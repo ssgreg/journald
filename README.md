@@ -4,9 +4,9 @@
 
 Package `journald` offers Go implementation of systemd Journal's native API for logging. Key features are:
 
-* based on connect-less socket
+* based on a connect-less socket
 * work with messages of any size
-* client can use any number of separation connections
+* client can use any number of separate connections
 
 ## Example
 
@@ -36,7 +36,7 @@ The JSON representation of the journal entry this generates:
 }
 ```
 
-The primary reason for using the Journal's native logging APIs is a not just a plain logs: it is to allow passing additional structured log messages from the program into the journal. This additional log data may the be used to search the journal for, is available for consumption for other programs, and might help the administrator to track down issues beyond what is expressed in the human readable message text. Here's and example how to do that with `journals.Send`:
+The primary reason for using the Journal's native logging APIs is not just plain logs: it is to allow passing additional structured log messages from the program into the journal. This additional log data may the be used to search the journal for, is available for consumption for other programs, and might help the administrator to track down issues beyond what is expressed in the human readable message text. Here's an example how to do that with `journals.Send`:
 
 ```go
 package main
@@ -73,7 +73,7 @@ This will write a log message to the journal much like the earlier examples. How
 }
 ```
 
-Our structured message includes six fields. The first thow we passed are well-known fields:
+Our structured message includes six fields. The first two we passed are well-known fields:
 
 1. `MESSAGE=` is the actual human readable message part of the structured message.
 1. `PRIORITY=` is the numeric message priority value as known from BSD syslog formatted as an integer string.
