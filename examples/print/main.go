@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/ssgreg/journald-send"
+	"github.com/ssgreg/journald"
 )
 
 func main() {
