@@ -16,7 +16,7 @@ Let's look at what the `journald` provides as Go APIs for logging:
 package main
 
 import (
-    "github.com/ssgreg/journald-send"
+    "github.com/ssgreg/journald"
 )
 
 func main() {
@@ -44,7 +44,7 @@ import (
     "os"
     "runtime"
     "strconv"
-    "github.com/ssgreg/journald-send"
+    "github.com/ssgreg/journald"
 )
 
 func main() {

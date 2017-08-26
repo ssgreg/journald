@@ -10,7 +10,7 @@ Let's look at what the journald provides as Go APIs for logging:
 	package main
 
 	import (
-		"github.com/ssgreg/journald-send"
+		"github.com/ssgreg/journald"
 	)
 
 	func main() {
@@ -36,7 +36,7 @@ The primary reason for using the Journal's native logging APIs is a not just the
 		"runtime"
 		"strconv"
 
-		"github.com/ssgreg/journald-send"
+		"github.com/ssgreg/journald"
 	)
 
 	func main() {
