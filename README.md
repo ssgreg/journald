@@ -9,8 +9,15 @@ Package `journald` offers Go implementation of systemd Journal's native API for 
 * work with messages of any size and type
 * client can use any number of separate connections
 
+## Installation
 
-## Example
+Install the package with:
+
+```shell
+go get github.com/ssgreg/journald
+```
+
+## Usage
 
 Let's look at what the `journald` provides as Go APIs for logging:
 
@@ -71,7 +78,7 @@ This will write a log message to the journal much like the earlier examples. How
     "TERM":         "xterm",
     "N_GOROUTINE":  "2",
     "N_CPUS":       "4",
-    "TRACE"         [103,111,32,49,46,56,32,116,114,97,99,101,0,0,0,0],
+    "TRACE":        [103,111,32,49,46,56,32,116,114,97,99,101,0,0,0,0],
     "_PID":         "4037",
     "_COMM":        "send",
     "...":          "..."
