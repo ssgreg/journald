@@ -52,6 +52,13 @@ type Journal struct {
 	once    sync.Once
 	conn    *net.UnixConn
 	connErr error
+
+	// NormalizeFieldNameFn is a hook that allows client to change
+	// fields names just before sending if set.
+	//
+	// Default value is nil.
+	// string.ToUpper is a good example of the hook usage.
+	NormalizeFieldNameFn func(string) string
 }
 
 // Print may be used to submit simple, plain text log entries to the
@@ -78,7 +85,7 @@ func (j *Journal) Send(msg string, p Priority, fields map[string]interface{}) er
 	if err != nil {
 		return err
 	}
-	data := marshal(msg, p, fields)
+	data := j.marshal(msg, p, fields)
 	_, _, err = c.WriteMsgUnix(data, nil, addr)
 	if err == nil {
 		return nil
@@ -187,18 +194,18 @@ func toErrno(err error) syscall.Errno {
 	return 0
 }
 
-func marshal(msg string, p Priority, fields map[string]interface{}) []byte {
+func (j *Journal) marshal(msg string, p Priority, fields map[string]interface{}) []byte {
 	bb := new(bytes.Buffer)
-	writeField(bb, "PRIORITY", strconv.Itoa(int(p)))
-	writeField(bb, "MESSAGE", msg)
+	j.writeField(bb, "PRIORITY", strconv.Itoa(int(p)))
+	j.writeField(bb, "MESSAGE", msg)
 	for k, v := range fields {
-		writeField(bb, k, v)
+		j.writeField(bb, k, v)
 	}
 	return bb.Bytes()
 }
 
-func writeField(w io.Writer, name string, value interface{}) {
-	w.Write([]byte(name))
+func (j *Journal) writeField(w io.Writer, name string, value interface{}) {
+	w.Write([]byte(j.normalizeFieldName(name)))
 	dv := valueToBytes(value)
 	if bytes.ContainsRune(dv, '\n') {
 		// According to the format, if the value includes a newline
@@ -212,6 +219,13 @@ func writeField(w io.Writer, name string, value interface{}) {
 	}
 	w.Write(dv)
 	w.Write([]byte{'\n'})
+}
+
+func (j *Journal) normalizeFieldName(s string) string {
+	if j.NormalizeFieldNameFn != nil {
+		return j.NormalizeFieldNameFn(s)
+	}
+	return s
 }
 
 func valueToBytes(value interface{}) []byte {

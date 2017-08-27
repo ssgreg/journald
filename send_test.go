@@ -18,6 +18,7 @@ var (
 	uniqueSmallMessageID   = "1"
 	uniqueBigMessageID     = "2"
 	uniquePrintedMessageID = "3"
+	uniqueLowerMessageID   = "4"
 )
 
 func TestMain(m *testing.M) {
@@ -26,6 +27,8 @@ func TestMain(m *testing.M) {
 	uniqueBigMessageID = time.Now().String()
 	time.Sleep(time.Millisecond)
 	uniquePrintedMessageID = time.Now().String()
+	time.Sleep(time.Millisecond)
+	uniqueLowerMessageID = time.Now().String()
 
 	os.Exit(m.Run())
 }
@@ -91,12 +94,26 @@ func TestCheckBigMessage(t *testing.T) {
 	require.True(t, strings.Contains(string(out), "PRIORITY=3"))
 }
 
+func TestCheckLowerMessage(t *testing.T) {
+	j := Journal{}
+	j.NormalizeFieldNameFn = strings.ToUpper
+	err := j.Send("LowerMessage", PriorityCrit, map[string]interface{}{"test_id": uniqueLowerMessageID})
+	require.NoError(t, err)
+	require.NoError(t, j.Close())
+
+	time.Sleep(time.Second * 5)
+
+	out, err := exec.Command("sh", "-c", fmt.Sprintf("journalctl 'TEST_ID=%s' -o verbose", uniqueLowerMessageID)).Output()
+	require.NoError(t, err)
+	require.True(t, strings.Contains(string(out), "MESSAGE=LowerMessage"))
+	require.True(t, strings.Contains(string(out), "PRIORITY=2"))
+}
+
 func TestSendClose(t *testing.T) {
 	j := Journal{}
 	err := j.Print(PriorityInfo, "SendClose")
 	require.NoError(t, err)
-	err = j.Close()
-	require.NoError(t, err)
+	require.NoError(t, j.Close())
 	err = j.Print(PriorityInfo, "SendClose")
 	assertErr(t, err, " use of closed network connection")
 }
