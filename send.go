@@ -42,8 +42,8 @@ var (
 	DefaultJournal = &Journal{}
 )
 
-// IsNotExists checks if the system journal is not exist.
-func IsNotExists() bool {
+// IsNotExist checks if the system journal is not exist.
+func IsNotExist() bool {
 	_, err := os.Stat(addr.Name)
 	return os.IsNotExist(err)
 }

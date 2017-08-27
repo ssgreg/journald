@@ -29,8 +29,8 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func TestIsNotExists(t *testing.T) {
-	require.False(t, IsNotExists())
+func TestIsNotExist(t *testing.T) {
+	require.False(t, IsNotExist())
 }
 
 func TestSendSmallMessage(t *testing.T) {
