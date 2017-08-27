@@ -2,7 +2,7 @@
 Package journald offers Go implementation of systemd Journal's native API for logging.  Key features are:
 
 	- based on connect-less socket
-	- work with messages of any size
+	- work with messages of any size and type
 	- client can use any number of separation connections
 
 Let's look at what the journald provides as Go APIs for logging:
@@ -34,17 +34,17 @@ The primary reason for using the Journal's native logging APIs is a not just the
 	import (
 		"os"
 		"runtime"
-		"strconv"
 
 		"github.com/ssgreg/journald"
 	)
 
 	func main() {
-		journald.Send("Hello World!", journald.PriorityInfo, map[string]string{
+		journald.Send("Hello World!", journald.PriorityInfo, map[string]interface{}{
 			"HOME":        os.Getenv("HOME"),
 			"TERM":        os.Getenv("TERM"),
-			"N_GOROUTINE": strconv.Itoa(runtime.NumGoroutine()),
-			"N_CPUS":      strconv.Itoa(runtime.NumCPU()),
+			"N_GOROUTINE": runtime.NumGoroutine(),
+			"N_CPUS":      runtime.NumCPU(),
+			"TRACE":       runtime.ReadTrace(),
 		})
 	}
 
@@ -57,6 +57,7 @@ This will write a log message to the journal much like the earlier examples. How
 		"TERM": "xterm",
 		"N_GOROUTINE": "2",
 		"N_CPUS": "4",
+		"TRACE": [103,111,32,49,46,56,32,116,114,97,99,101,0,0,0,0],
 		"_PID": "4037",
 		"_COMM": "send",
 		...

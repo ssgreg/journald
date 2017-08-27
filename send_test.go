@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"os"
 	"os/exec"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -33,8 +34,16 @@ func TestIsNotExist(t *testing.T) {
 	require.False(t, IsNotExist())
 }
 
+type Test struct {
+	Field1 string
+	Field2 int
+	Field3 map[string]float32
+}
+
 func TestSendSmallMessage(t *testing.T) {
-	err := Send("AnotherMessage", PriorityInfo, map[string]string{"ONE": "1", "TWO": "2", "THREE": "3", "FOUR": RandStringRunes(768)})
+	s := Test{"field1", 2, map[string]float32{"3": 0.4, "5": 6.7}}
+	trace := runtime.ReadTrace()
+	err := Send("AnotherMessage", PriorityInfo, map[string]interface{}{"ONE": 1, "TWO": trace, "THREE": s, "FOUR": RandStringRunes(768)})
 	require.NoError(t, err)
 }
 
@@ -51,7 +60,7 @@ func TestCheckPrint(t *testing.T) {
 }
 
 func TestCheckSmallMessage(t *testing.T) {
-	err := Send("SmallMessage", PriorityWarning, map[string]string{"TEST_ID": uniqueSmallMessageID, "WITH_NEWLINES": "b\n\nsd\n"})
+	err := Send("SmallMessage", PriorityWarning, map[string]interface{}{"TEST_ID": uniqueSmallMessageID, "WITH_NEWLINES": "b\n\nsd\n"})
 	require.NoError(t, err)
 
 	time.Sleep(time.Second * 5)
@@ -69,7 +78,7 @@ func TestCheckSmallMessage(t *testing.T) {
 }
 
 func TestCheckBigMessage(t *testing.T) {
-	err := Send("BigMessage", PriorityErr, map[string]string{"TEST_ID": uniqueBigMessageID, "BIG_MESSAGE": RandStringRunes(1024 * 512)})
+	err := Send("BigMessage", PriorityErr, map[string]interface{}{"TEST_ID": uniqueBigMessageID, "BIG_MESSAGE": RandStringRunes(1024 * 512)})
 	require.NoError(t, err)
 
 	time.Sleep(time.Second * 5)

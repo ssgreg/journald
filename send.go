@@ -15,7 +15,6 @@ import (
 	"net"
 	"os"
 	"strconv"
-	"strings"
 	"sync"
 	"syscall"
 )
@@ -74,7 +73,7 @@ func (j *Journal) Print(p Priority, format string, a ...interface{}) error {
 // A number of well known fields are defined, see:
 // http://0pointer.de/public/systemd-man/systemd.journal-fields.html
 //
-func (j *Journal) Send(msg string, p Priority, fields map[string]string) error {
+func (j *Journal) Send(msg string, p Priority, fields map[string]interface{}) error {
 	c, err := j.journalConn()
 	if err != nil {
 		return err
@@ -173,7 +172,7 @@ func Print(p Priority, format string, a ...interface{}) error {
 // http://0pointer.de/public/systemd-man/systemd.journal-fields.html
 //
 // Send is a wrapper around DefaultJournal.Send.
-func Send(msg string, p Priority, fields map[string]string) error {
+func Send(msg string, p Priority, fields map[string]interface{}) error {
 	return DefaultJournal.Send(msg, p, fields)
 }
 
@@ -188,7 +187,7 @@ func toErrno(err error) syscall.Errno {
 	return 0
 }
 
-func marshal(msg string, p Priority, fields map[string]string) []byte {
+func marshal(msg string, p Priority, fields map[string]interface{}) []byte {
 	bb := new(bytes.Buffer)
 	writeField(bb, "PRIORITY", strconv.Itoa(int(p)))
 	writeField(bb, "MESSAGE", msg)
@@ -198,20 +197,32 @@ func marshal(msg string, p Priority, fields map[string]string) []byte {
 	return bb.Bytes()
 }
 
-func writeField(w io.Writer, name, value string) {
+func writeField(w io.Writer, name string, value interface{}) {
 	w.Write([]byte(name))
-	if strings.ContainsRune(value, '\n') {
+	dv := valueToBytes(value)
+	if bytes.ContainsRune(dv, '\n') {
 		// According to the format, if the value includes a newline
 		// need to write the field name, plus a newline, then the
 		// size (64bit LE), the field data and a final newline.
 
 		w.Write([]byte{'\n'})
-		binary.Write(w, binary.LittleEndian, uint64(len(value)))
+		binary.Write(w, binary.LittleEndian, uint64(len(dv)))
 	} else {
 		w.Write([]byte{'='})
 	}
-	w.Write([]byte(value))
+	w.Write(dv)
 	w.Write([]byte{'\n'})
+}
+
+func valueToBytes(value interface{}) []byte {
+	switch rv := value.(type) {
+	case string:
+		return []byte(rv)
+	case []byte:
+		return rv
+	default:
+		return []byte(fmt.Sprint(value))
+	}
 }
 
 func openTempFileUnlinkable() (*os.File, error) {
