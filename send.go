@@ -115,12 +115,13 @@ func (j *Journal) Send(msg string, p Priority, fields map[string]interface{}) er
 
 // Close closes the underlying connection.
 func (j *Journal) Close() error {
-	c, err := j.journalConn()
-	if err != nil {
-		return err
+	if j.connErr != nil {
+		return j.connErr
 	}
-	err = c.Close()
-	return err
+	if j.conn == nil {
+		return nil
+	}
+	return j.conn.Close()
 }
 
 func (j *Journal) journalConn() (*net.UnixConn, error) {
