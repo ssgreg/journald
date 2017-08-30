@@ -1,7 +1,7 @@
 /*
 Package journald offers Go implementation of systemd Journal's native API for logging.  Key features are:
 
-	- based on connect-less socket
+	- based on connection-less socket
 	- work with messages of any size and type
 	- client can use any number of separation connections
 
