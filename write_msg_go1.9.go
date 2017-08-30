@@ -8,6 +8,7 @@ import (
 	"unsafe"
 )
 
+// Check function description in write_msg.go
 func writeMsgUnix(c *net.UnixConn, oob []byte, addr *net.UnixAddr) (oobn int, err error) {
 	ptr, salen := sockaddr(addr)
 
