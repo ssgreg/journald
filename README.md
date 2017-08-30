@@ -7,7 +7,7 @@ Package `journald` offers Go implementation of systemd Journal's native API for 
 
 * based on a connection-less socket
 * work with messages of any size and type
-* client can use any number of separate connections
+* client can use any number of separate sockets
 
 ## Installation
 
