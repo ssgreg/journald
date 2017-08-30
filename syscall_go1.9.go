@@ -1,4 +1,4 @@
-// +build !go1.9
+// +build go1.9
 
 package journald
 
@@ -17,15 +17,21 @@ func writeMsgUnix(c *net.UnixConn, oob []byte, addr *net.UnixAddr) (oobn int, er
 	msg.Control = (*byte)(unsafe.Pointer(&oob[0]))
 	msg.SetControllen(len(oob))
 
-	f, err := c.File()
+	rawConn, err := c.SyscallConn()
 	if err != nil {
 		return 0, err
 	}
-	defer f.Close()
 
-	_, n, errno := syscall.Syscall(syscall.SYS_SENDMSG, f.Fd(), uintptr(unsafe.Pointer(&msg)), 0)
-	if errno != 0 {
-		return int(n), errno
+	var n uintptr
+	var errno syscall.Errno
+	err = rawConn.Write(func(fd uintptr) bool {
+		_, n, errno = syscall.Syscall(syscall.SYS_SENDMSG, fd, uintptr(unsafe.Pointer(&msg)), 0)
+		return true
+	})
+	if err == nil {
+		if errno != 0 {
+			err = errno
+		}
 	}
-	return int(n), nil
+	return int(n), err
 }
