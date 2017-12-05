@@ -2,6 +2,7 @@
 [![GoDoc](https://godoc.org/github.com/ssgreg/journald?status.svg)](https://godoc.org/github.com/ssgreg/journald)
 [![Build Status](https://travis-ci.org/ssgreg/journald.svg?branch=master)](https://travis-ci.org/ssgreg/journald)
 [![Go Report Status](https://goreportcard.com/badge/github.com/ssgreg/journald)](https://goreportcard.com/report/github.com/ssgreg/journald)
+[![GoCover](https://gocover.io/_badge/github.com/ssgreg/journald)](https://gocover.io/github.com/ssgreg/journald)
 
 Package `journald` offers Go implementation of systemd Journal's native API for logging. Key features are:
 
