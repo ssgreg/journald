@@ -68,24 +68,14 @@ func (j *Journal) Print(p Priority, format string, a ...interface{}) error {
 	return j.Send(fmt.Sprintf(format, a...), p, nil)
 }
 
-// Send may be used to submit structured log entries to the system
-// journal. It takes a map of fields with names and values.
-//
-// The field names must be in uppercase and consist only of characters,
-// numbers and underscores, and may not begin with an underscore. All
-// fields that do not follow this syntax will be ignored. The value can
-// be of any size and format. A variable may be assigned more than one
-// value per entry.
-//
-// A number of well known fields are defined, see:
-// http://0pointer.de/public/systemd-man/systemd.journal-fields.html
-//
-func (j *Journal) Send(msg string, p Priority, fields map[string]interface{}) error {
+// WriteMsg writes the given bytes to the systemd journal's socket.
+// The caller is in charge of correct data format.
+func (j *Journal) WriteMsg(data []byte) error {
 	c, err := j.journalConn()
 	if err != nil {
 		return err
 	}
-	data := j.marshal(msg, p, fields)
+
 	_, _, err = c.WriteMsgUnix(data, nil, addr)
 	if err == nil {
 		return nil
@@ -110,7 +100,25 @@ func (j *Journal) Send(msg string, p Priority, fields map[string]interface{}) er
 		return err
 	}
 	_, err = writeMsgUnix(c, syscall.UnixRights(int(f.Fd())), addr)
+
 	return err
+
+}
+
+// Send may be used to submit structured log entries to the system
+// journal. It takes a map of fields with names and values.
+//
+// The field names must be in uppercase and consist only of characters,
+// numbers and underscores, and may not begin with an underscore. All
+// fields that do not follow this syntax will be ignored. The value can
+// be of any size and format. A variable may be assigned more than one
+// value per entry.
+//
+// A number of well known fields are defined, see:
+// http://0pointer.de/public/systemd-man/systemd.journal-fields.html
+//
+func (j *Journal) Send(msg string, p Priority, fields map[string]interface{}) error {
+	return j.WriteMsg(j.marshal(msg, p, fields))
 }
 
 // Close closes the underlying connection.
@@ -121,6 +129,7 @@ func (j *Journal) Close() error {
 	if j.conn == nil {
 		return nil
 	}
+
 	return j.conn.Close()
 }
 
@@ -155,6 +164,7 @@ func (j *Journal) journalConn() (*net.UnixConn, error) {
 		uc.SetWriteBuffer(8 * 1024 * 1024)
 		j.conn = uc
 	})
+
 	return j.conn, j.connErr
 }
 
@@ -192,6 +202,7 @@ func toErrno(err error) syscall.Errno {
 			return e.Err.(syscall.Errno)
 		}
 	}
+
 	return 0
 }
 
@@ -202,6 +213,7 @@ func (j *Journal) marshal(msg string, p Priority, fields map[string]interface{})
 	for k, v := range fields {
 		j.writeField(bb, k, v)
 	}
+
 	return bb.Bytes()
 }
 
@@ -250,5 +262,6 @@ func openTempFileUnlinkable() (*os.File, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return f, nil
 }
