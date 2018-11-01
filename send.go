@@ -59,6 +59,10 @@ type Journal struct {
 	// Default value is nil.
 	// string.ToUpper is a good example of the hook usage.
 	NormalizeFieldNameFn func(string) string
+
+	// TestModeEnabled allows Journal to do nothing. All messages are
+	// discarding.
+	TestModeEnabled bool
 }
 
 // Print may be used to submit simple, plain text log entries to the
@@ -71,6 +75,10 @@ func (j *Journal) Print(p Priority, format string, a ...interface{}) error {
 // WriteMsg writes the given bytes to the systemd journal's socket.
 // The caller is in charge of correct data format.
 func (j *Journal) WriteMsg(data []byte) error {
+	if j.TestModeEnabled {
+		return nil
+	}
+
 	c, err := j.journalConn()
 	if err != nil {
 		return err
