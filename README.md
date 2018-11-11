@@ -18,7 +18,52 @@ Install the package with:
 go get github.com/ssgreg/journald
 ```
 
-## Usage
+## Usage: The Best Way
+
+The Best Way to use structured logs (systemd Journal, etc.) is [logf](https://github.com/ssgreg/logf) - the fast, asynchronous, structured logger in Go with zero allocation count and it's journald driver [logfjournald](https://github.com/ssgreg/logfjournald). This driver uses `journald` package.
+The following example creates the new `logf` logger with `logfjournald` appender.
+
+```go
+package main
+
+import (
+    "runtime"
+
+    "github.com/ssgreg/logf"
+    "github.com/ssgreg/logfjournald"
+)
+
+func main() {
+    // Create journald Appender with default journald Encoder.
+    appender, appenderClose := logfjournald.NewAppender(logfjournald.NewEncoder.Default())
+    defer appenderClose()
+
+    // Create ChannelWriter with journald Encoder.
+    writer, writerClose := logf.NewChannelWriter(logf.ChannelWriterConfig{
+        Appender: appender,
+    })
+    defer writerClose()
+
+    // Create Logger with ChannelWriter.
+    logger := logf.NewLogger(logf.LevelInfo, writer)
+
+    logger.Info("got cpu info", logf.Int("count", runtime.NumCPU()))
+}
+```
+
+The JSON representation of the journal entry this generates:
+
+```json
+{
+  "TS": "2018-11-01T07:25:18Z",
+  "PRIORITY": "6",
+  "LEVEL": "info",
+  "MESSAGE": "got cpu info",
+  "COUNT": "4",
+}
+```
+
+## Usage: AS-IS
 
 Let's look at what the `journald` provides as Go APIs for logging:
 
