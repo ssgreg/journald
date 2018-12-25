@@ -6,6 +6,8 @@ import (
 	"net"
 	"syscall"
 	"unsafe"
+
+	"golang.org/x/sys/unix"
 )
 
 // Go implementation of sendmsg (UnixConn.WriteMsgUnix) is not suitable
@@ -39,9 +41,10 @@ func writeMsgUnix(c *net.UnixConn, oob []byte, addr *net.UnixAddr) (oobn int, er
 	}
 	defer f.Close()
 
-	_, n, errno := syscall.Syscall(syscall.SYS_SENDMSG, f.Fd(), uintptr(unsafe.Pointer(&msg)), 0)
+	_, n, errno := syscall.Syscall(unix.SYS_SENDMSG, f.Fd(), uintptr(unsafe.Pointer(&msg)), 0)
 	if errno != 0 {
 		return int(n), errno
 	}
+
 	return int(n), nil
 }

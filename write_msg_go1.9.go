@@ -6,6 +6,8 @@ import (
 	"net"
 	"syscall"
 	"unsafe"
+
+	"golang.org/x/sys/unix"
 )
 
 // Check function description in write_msg.go
@@ -26,7 +28,7 @@ func writeMsgUnix(c *net.UnixConn, oob []byte, addr *net.UnixAddr) (oobn int, er
 	var n uintptr
 	var errno syscall.Errno
 	err = rawConn.Write(func(fd uintptr) bool {
-		_, n, errno = syscall.Syscall(syscall.SYS_SENDMSG, fd, uintptr(unsafe.Pointer(&msg)), 0)
+		_, n, errno = syscall.Syscall(unix.SYS_SENDMSG, fd, uintptr(unsafe.Pointer(&msg)), 0)
 		return true
 	})
 	if err == nil {
@@ -34,5 +36,6 @@ func writeMsgUnix(c *net.UnixConn, oob []byte, addr *net.UnixAddr) (oobn int, er
 			err = errno
 		}
 	}
+
 	return int(n), err
 }
